@@ -1,14 +1,13 @@
 #ifndef COMMAND_LIST_H
 #define COMMAND_LIST_H
 
-#define SUPPORTED_CMDS 6
+#define SUPPORTED_CMDS 5
 
 enum COMMAND_IDS {
     CAT,
     DATE,
     ECHO,
     EXIT,
-    PRINT_ARGS,
     TYPE,
 };
 char *ARGS_LIST[] = {
@@ -16,7 +15,6 @@ char *ARGS_LIST[] = {
     "date",
     "echo",
     "exit",
-    "printargs",
     "type",
 };
 #endif

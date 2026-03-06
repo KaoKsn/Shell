@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "../include/command_list.h"
+#include "./built_ins.c"
 
 #define MAX_ARGLEN 64
 #define MAX_ARGS 16
@@ -13,6 +14,7 @@
 char **breakdown(char *cmd, int len, int *targs);
 int is_valid(char *cmd);
 void printargs(char **args, int targs);
+int execute(int cmd_id, char **cmdbuffer, int targs);
 void freecmdbuffer(char **args);
 
 static void sigint_handler(int s) 
@@ -22,7 +24,7 @@ static void sigint_handler(int s)
 }
 int main(void) {
     signal(SIGINT, sigint_handler);
-    int targs = 0;
+    int targs = 0, exit_status = 0, cmd_id;
     char cmd[INPUT_BUFFER_SIZE];
     while (true) {
         setbuf(stdout, NULL);
@@ -47,12 +49,12 @@ int main(void) {
             continue;
         }
         char *cmd = cmdbuffer[0];
-        int cmd_id = is_valid(cmd);
-        if (cmd_id != -1) {
-            // Try executing the command.
-        } else {
+        cmd_id = is_valid(cmd);
+        exit_status = execute(cmd_id, cmdbuffer, targs);
+        if (exit_status == -1)
             fprintf(stderr, "%s: command not found\n", cmd);
-        }
+        else if (cmd_id > 0)
+            fprintf(stderr, "%s: Failed (exec status: %d).\n", cmd, exit_status);
         freecmdbuffer(cmdbuffer);
     }
     return 0;
@@ -138,3 +140,31 @@ int is_valid(char *cmd)
     }
     return -1;
 }
+
+int execute(int cmd_id, char **cmdbuffer, int targs)
+{
+    if (cmdbuffer) {
+        switch (cmd_id) {
+            case CAT:
+                    return cat(cmdbuffer + 1, targs - 1);
+            case DATE:
+                    return date();
+            case ECHO:
+                    printargs(cmdbuffer + 1, targs - 1);
+                    return 0;
+            case EXIT:
+                    printf("Bye...\n");
+                    freecmdbuffer(cmdbuffer);
+                    exit(0);
+            case TYPE:
+                if (targs < 2)
+                    return 1;
+                char *cmd = cmdbuffer[1];
+                return type(cmd);
+            default:
+                return -1;
+        }
+    }
+    return -1;
+}
+
