@@ -10,7 +10,9 @@
 #define MAX_ARGLEN 128
 #define MAX_ARGS 16
 #define INPUT_BUFFER_SIZE MAX_ARGLEN * MAX_ARGS + MAX_ARGS - 1
+#define INVALID_INPUT 1
 
+int read_input(char *cmd);
 char **breakdown(char *cmd, int len, int *targs);
 void printargs(char **args, int targs);
 int execute(int cmd_id, char **cmdargs, int targs);
@@ -23,25 +25,17 @@ static void sigint_handler(int s)
 }
 int main(void) {
     signal(SIGINT, sigint_handler);
-    int targs = 0, exit_status = 0, cmd_id;
+    int targs = 0, exit_status, input_status, cmd_id;
     char cmd[INPUT_BUFFER_SIZE];
     while (true) {
         setbuf(stdout, NULL);
         printf("$ ");
 
         memset(cmd, 0, sizeof(cmd));
-        if (fgets(cmd, sizeof(char) * INPUT_BUFFER_SIZE, stdin) == NULL) {
-            putchar('\n');
-            continue;
-        }
 
-        if (cmd[strlen(cmd) - 1] == '\n') {
-            cmd[strlen(cmd) - 1] = '\0';
-        } else {  // Empty stdout on overflow.
-            int c;
-            while ((c = getchar()) != EOF && c != '\n');
+        input_status = read_input(cmd);
+        if (input_status != 0)
             continue;
-        }
         char **cmdargs = breakdown(cmd, strlen(cmd), &targs);
         if (cmdargs == NULL) {
             fprintf(stderr, "Allocation Failed!\n");
@@ -56,6 +50,26 @@ int main(void) {
             fprintf(stderr, "%s: Failed (exec status: %d).\n", bin, exit_status);
         freecmdargs(cmdargs);
     }
+    return 0;
+}
+
+int read_input(char *cmd)
+{
+    if (fgets(cmd, sizeof(char) * INPUT_BUFFER_SIZE, stdin) == NULL) {
+        putchar('\n');
+        return INVALID_INPUT;
+    }
+    int len = strlen(cmd);
+    if (cmd[len - 1] == '\n') {
+        cmd[len - 1] = '\0';
+    } else {  // Empty buffer on overflow.
+        int c;
+        while ((c = getchar()) != EOF && c != '\n');
+        return INVALID_INPUT;
+    }
+    // Empty input.
+    if (cmd[0] == '\0')
+        return INVALID_INPUT;
     return 0;
 }
 
