@@ -7,7 +7,7 @@
 #include "../include/command_list.h"
 #include "./built_ins.c"
 
-#define MAX_ARGLEN 64
+#define MAX_ARGLEN 128
 #define MAX_ARGS 16
 #define INPUT_BUFFER_SIZE MAX_ARGLEN * MAX_ARGS + MAX_ARGS - 1
 
@@ -80,21 +80,23 @@ char **breakdown(char *cmd, int len, int *targs)
     for (int i = 0; i <= len; i++) {
         // Allow only MAX_ARGS.
         if (*targs == MAX_ARGS) {
-            fprintf(stderr, "Only 16 arguments(including name) allowed!\n");
+            fprintf(stderr, "\nOnly 16 arguments(including name) allowed!\n");
             printf("Going ahead with...\n\t");
             printargs(cmd_args, *targs);
+            printf("\n");
             return cmd_args;
         }
         // TODO: Add support to format: "strings how".
         char c = cmd[i];
         if (c == ' ' || c == '\0') {
             // Allow only MAX_ARGLEN.
-            if (arglen > 64) {
-                fprintf(stderr, "Max argument length allowed: 64\n");
-                printf("Truncating others!\n");
+            if (arglen > MAX_ARGLEN) {
+                fprintf(stderr, "\n\tMax argument length allowed: %d\n", MAX_ARGLEN);
+                fprintf(stderr, "\tTruncating others!\n\n");
+                arglen = MAX_ARGLEN;
             }
-            strncpy(cmd_args[*targs], cmd + argstart_indx, MAX_ARGLEN);
-            cmd_args[(*targs)++][MAX_ARGLEN] = '\0';
+            strncpy(cmd_args[*targs], cmd + argstart_indx, arglen);
+            cmd_args[(*targs)++][arglen] = '\0';
             // Setup for the next arg read.
             argstart_indx = i + 1, arglen = 0;
             continue;

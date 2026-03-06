@@ -39,7 +39,6 @@ int cat (char **files, int tfiles)
         }
         fclose(fptr);
     }
-    printf("\n");
     return 0;
 }
 
