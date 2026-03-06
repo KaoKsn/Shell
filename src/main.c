@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,7 +11,13 @@
 char **breakdown(char *cmd, int len, int *targs);
 void freecmdbuffer(char **args);
 
+static void sigint_handler(int s) 
+{
+    printf("\nBye\n");
+    exit(0);
+}
 int main(void) {
+    signal(SIGINT, sigint_handler);
     int targs = 0;
     char cmd[INPUT_BUFFER_SIZE];
     while (true) {
