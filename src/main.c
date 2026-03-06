@@ -4,11 +4,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../include/command_list.h"
+
 #define MAX_ARGLEN 64
 #define MAX_ARGS 16
 #define INPUT_BUFFER_SIZE MAX_ARGLEN * MAX_ARGS + MAX_ARGS - 1
 
 char **breakdown(char *cmd, int len, int *targs);
+int is_valid(char *cmd);
+void printargs(char **args, int targs);
 void freecmdbuffer(char **args);
 
 static void sigint_handler(int s) 
@@ -42,6 +46,13 @@ int main(void) {
             fprintf(stderr, "Allocation Failed!\n");
             continue;
         }
+        char *cmd = cmdbuffer[0];
+        int cmd_id = is_valid(cmd);
+        if (cmd_id != -1) {
+            // Try executing the command.
+        } else {
+            fprintf(stderr, "%s: command not found\n", cmd);
+        }
         freecmdbuffer(cmdbuffer);
     }
     return 0;
@@ -54,7 +65,7 @@ char **breakdown(char *cmd, int len, int *targs)
             return NULL;
     }
     for (int i = 0; i < MAX_ARGS; i++) {
-        cmd_args[i] = calloc(MAX_ARGLEN, sizeof(char));
+        cmd_args[i] = calloc(MAX_ARGLEN + 1, sizeof(char));
         if (cmd_args[i] == NULL) {
             for (int j = 0; j < i; j++) {
                 free(cmd_args[i]);
@@ -69,13 +80,20 @@ char **breakdown(char *cmd, int len, int *targs)
         // Allow only MAX_ARGS.
         if (*targs == MAX_ARGS) {
             fprintf(stderr, "Only 16 arguments(including name) allowed!\n");
+            printf("Going ahead with...\n\t");
+            printargs(cmd_args, *targs);
             return cmd_args;
         }
         // TODO: Add support to format: "strings how".
         char c = cmd[i];
         if (c == ' ' || c == '\0') {
-            strncpy(cmd_args[*targs], cmd + argstart_indx, arglen);
-            cmd_args[(*targs)++][arglen] = '\0';
+            // Allow only MAX_ARGLEN.
+            if (arglen > 64) {
+                fprintf(stderr, "Max argument length allowed: 64\n");
+                printf("Truncating others!\n");
+            }
+            strncpy(cmd_args[*targs], cmd + argstart_indx, MAX_ARGLEN);
+            cmd_args[(*targs)++][MAX_ARGLEN] = '\0';
             // Setup for the next arg read.
             argstart_indx = i + 1, arglen = 0;
             continue;
@@ -92,4 +110,31 @@ void freecmdbuffer(char **cmdbuffer)
             free(cmdbuffer[i]);
         free(cmdbuffer);
     }
+}
+
+void printargs(char **args, int targs)
+{
+    if (args) {
+        for (int i = 0; i < targs; i++)
+            printf("%s ", args[i]);
+    }
+    printf("\n");
+}
+
+int is_valid(char *cmd)
+{
+    if (cmd) {
+        int b = 0, e = SUPPORTED_CMDS - 1;
+        while (b <= e) {
+            int mid = (b + e) / 2;
+            int cmpval = strcmp(ARGS_LIST[mid], cmd);
+            if (cmpval == 0)
+                return mid;
+            else if (cmpval < 0)
+                b = mid + 1;
+            else
+                e = mid - 1;
+        }
+    }
+    return -1;
 }
