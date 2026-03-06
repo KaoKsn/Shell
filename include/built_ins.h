@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 #include "./command_list.h"
 
 #define OPEN_ERR 2

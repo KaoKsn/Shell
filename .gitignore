@@ -1,3 +1,7 @@
-td.txt
+todo
+
+*.bak
 
 *.o
+*.s
+*.d
