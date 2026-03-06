@@ -12,10 +12,9 @@
 #define INPUT_BUFFER_SIZE MAX_ARGLEN * MAX_ARGS + MAX_ARGS - 1
 
 char **breakdown(char *cmd, int len, int *targs);
-int is_valid(char *cmd);
 void printargs(char **args, int targs);
-int execute(int cmd_id, char **cmdbuffer, int targs);
-void freecmdbuffer(char **args);
+int execute(int cmd_id, char **cmdargs, int targs);
+void freecmdargs(char **args);
 
 static void sigint_handler(int s) 
 {
@@ -43,19 +42,19 @@ int main(void) {
             while ((c = getchar()) != EOF && c != '\n');
             continue;
         }
-        char **cmdbuffer = breakdown(cmd, strlen(cmd), &targs);
-        if (cmdbuffer == NULL) {
+        char **cmdargs = breakdown(cmd, strlen(cmd), &targs);
+        if (cmdargs == NULL) {
             fprintf(stderr, "Allocation Failed!\n");
             continue;
         }
-        char *cmd = cmdbuffer[0];
-        cmd_id = is_valid(cmd);
-        exit_status = execute(cmd_id, cmdbuffer, targs);
+        char *bin = cmdargs[0];
+        cmd_id = builtin(bin);
+        exit_status = execute(cmd_id, cmdargs, targs);
         if (exit_status == -1)
-            fprintf(stderr, "%s: command not found\n", cmd);
-        else if (cmd_id > 0)
-            fprintf(stderr, "%s: Failed (exec status: %d).\n", cmd, exit_status);
-        freecmdbuffer(cmdbuffer);
+            fprintf(stderr, "%s: command not found\n", bin);
+        else if (exit_status > 0)
+            fprintf(stderr, "%s: Failed (exec status: %d).\n", bin, exit_status);
+        freecmdargs(cmdargs);
     }
     return 0;
 }
@@ -105,12 +104,12 @@ char **breakdown(char *cmd, int len, int *targs)
     return cmd_args;
 }
 
-void freecmdbuffer(char **cmdbuffer)
+void freecmdargs(char **cmdargs)
 {
-    if (cmdbuffer) {
+    if (cmdargs) {
         for (int i = 0; i < MAX_ARGS; i++)
-            free(cmdbuffer[i]);
-        free(cmdbuffer);
+            free(cmdargs[i]);
+        free(cmdargs);
     }
 }
 
@@ -123,43 +122,26 @@ void printargs(char **args, int targs)
     printf("\n");
 }
 
-int is_valid(char *cmd)
-{
-    if (cmd) {
-        int b = 0, e = SUPPORTED_CMDS - 1;
-        while (b <= e) {
-            int mid = (b + e) / 2;
-            int cmpval = strcmp(ARGS_LIST[mid], cmd);
-            if (cmpval == 0)
-                return mid;
-            else if (cmpval < 0)
-                b = mid + 1;
-            else
-                e = mid - 1;
-        }
-    }
-    return -1;
-}
 
-int execute(int cmd_id, char **cmdbuffer, int targs)
+int execute(int cmd_id, char **cmdargs, int targs)
 {
-    if (cmdbuffer) {
+    if (cmdargs) {
         switch (cmd_id) {
             case CAT:
-                    return cat(cmdbuffer + 1, targs - 1);
+                    return cat(cmdargs + 1, targs - 1);
             case DATE:
                     return date();
             case ECHO:
-                    printargs(cmdbuffer + 1, targs - 1);
+                    printargs(cmdargs + 1, targs - 1);
                     return 0;
             case EXIT:
                     printf("Bye...\n");
-                    freecmdbuffer(cmdbuffer);
+                    freecmdargs(cmdargs);
                     exit(0);
             case TYPE:
                 if (targs < 2)
                     return 1;
-                char *cmd = cmdbuffer[1];
+                char *cmd = cmdargs[1];
                 return type(cmd);
             default:
                 return -1;
@@ -167,4 +149,3 @@ int execute(int cmd_id, char **cmdbuffer, int targs)
     }
     return -1;
 }
-
