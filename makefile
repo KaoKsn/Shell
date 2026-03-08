@@ -1,6 +1,6 @@
 CC := gcc
 OPT := -O1
-CFLAGS := -pedantic -Wall -Wextra $(OPT)
+CFLAGS := -pedantic -Wall -Wextra -g $(OPT)
 TARGET_EXEC := main
 
 BUILD_DIR := ./build
