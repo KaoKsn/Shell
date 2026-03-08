@@ -77,7 +77,7 @@ int search_in(char *dir, char *file) {
 // Check if a given binary is present in PATH.
 bool isexecutable(char *cmd) {
     char delimiter = strstr(PATH, ":") ? ':' : ';';
-    char *dir = calloc(PATH_MAX, sizeof(char));
+    char dir[PATH_MAX] = {'\0'};
     for (size_t i = 0, k = 0; PATH[i] != '\0'; i++) {
         if (PATH[i] == delimiter || i == strlen(PATH) - 1) {
             if (i == strlen(PATH) - 1)
@@ -86,7 +86,6 @@ bool isexecutable(char *cmd) {
                 strcat(dir, "/");
             if (search_in(dir, cmd) == 1) {
                 printf("%s is %s\n", cmd, dir);
-                free(dir);
                 return true;
             }
             // Check in the next path.
@@ -96,7 +95,26 @@ bool isexecutable(char *cmd) {
             dir[k++] = PATH[i];
         }
     }
-    free(dir);
     return false;
+}
+
+int pwd()
+{
+    char *path = calloc(PATH_MAX, sizeof(char));
+    if (path == NULL) {
+        char pathbuff[PATH_MAX] = {'\0'};
+        if (getcwd(pathbuff, sizeof(PATH_MAX)) != NULL) {
+            printf("%s\n", pathbuff);
+            return 0;
+        } else {
+            return 1;
+        }
+    } else if (getcwd(path, PATH_MAX) != NULL){
+        printf("%s\n", path);
+        free(path);
+        return 0;
+    }
+    free(path);
+    return ERANGE;
 }
 #endif /* ifndef BUILT_INS_C */

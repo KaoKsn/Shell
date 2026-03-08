@@ -136,6 +136,8 @@ int execute(int cmd_id, char **cmdargs, int targs)
                     printf("Bye...\n");
                     freecmdargs(cmdargs);
                     exit(0);
+            case PWD:
+                    return pwd();
             case TYPE:
                 if (targs < 2)
                     return 1;

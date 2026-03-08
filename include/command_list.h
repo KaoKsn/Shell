@@ -3,13 +3,14 @@
 
 char *PATH = "/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl";
 
-#define SUPPORTED_CMDS 5
+#define SUPPORTED_CMDS 6
 
 enum COMMAND_IDS {
     CAT,
     DATE,
     ECHO,
     EXIT,
+    PWD,
     TYPE,
 };
 char *ARGS_LIST[] = {
@@ -17,6 +18,7 @@ char *ARGS_LIST[] = {
     "date",
     "echo",
     "exit",
+    "pwd",
     "type",
 };
 #endif
