@@ -55,8 +55,48 @@ int type(char *cmd)
 {
     if (builtin(cmd) != -1)
         printf("%s: is a shell built-in\n", cmd);
-    else
-        printf("%s: type unknown\n", cmd);
+    else if (isexecutable(cmd) == false)
+        printf("%s: not found\n", cmd);
     return 0;
+}
+
+// Look dir for file.
+int search_in(char *dir, char *file) {
+    if (dir) {
+        strcat(dir, file);
+        struct stat sb;
+        if (stat(dir, &sb) == 0 && (sb.st_mode & S_IEXEC))
+            return 1;
+        else
+            // File found with no execute perm(0).
+            return 0;
+    }
+    return 0;
+}
+
+// Check if a given binary is present in PATH.
+bool isexecutable(char *cmd) {
+    char delimiter = strstr(PATH, ":") ? ':' : ';';
+    char *dir = calloc(PATH_MAX, sizeof(char));
+    for (size_t i = 0, k = 0; PATH[i] != '\0'; i++) {
+        if (PATH[i] == delimiter || i == strlen(PATH) - 1) {
+            if (i == strlen(PATH) - 1)
+                dir[k++] = PATH[i];
+            if (dir[strlen(dir)-1] != '/')
+                strcat(dir, "/");
+            if (search_in(dir, cmd) == 1) {
+                printf("%s is %s\n", cmd, dir);
+                free(dir);
+                return true;
+            }
+            // Check in the next path.
+            memset(dir, 0, PATH_MAX * sizeof(char));
+            k = 0;
+        } else {
+            dir[k++] = PATH[i];
+        }
+    }
+    free(dir);
+    return false;
 }
 #endif /* ifndef BUILT_INS_C */
