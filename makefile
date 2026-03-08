@@ -1,9 +1,11 @@
-CC = gcc
+CC := gcc
+OPT := -O1
+CFLAGS := -pedantic -Wall -Wextra $(OPT)
 TARGET_EXEC := main
 
 BUILD_DIR := ./build
-SOURCE := ./src/main.c
-INC_DIRS := ./include
+SOURCE := ./src/shell.c
+INC_DIRS := . ./include
 
 # Add a prefix to INC_DIRS. So moduleA would become -ImoduleA. GCC understands this -I flag
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
@@ -17,7 +19,7 @@ CPPFLAGS := $(INC_FLAGS) -MMD -MP
 
 $(BUILD_DIR)/$(TARGET_EXEC): $(SOURCE) $(INC_FILES)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(SOURCE) -o $@
+	$(CC) $(CFLAGS) $(SOURCE) -o $@
 
 .PHONY: clean
 clean:
