@@ -7,15 +7,17 @@ REPLs, builtin commands, and more.
 
 ## Structure
     .
-    ├── build
-    │   ├── main
-    │   └── src
+    ├── include
+    │   ├── built_ins.h
+    │   └── command_list.h
     ├── LICENSE
     ├── makefile
     ├── README.md
     └── src
-        └── main.c
+        ├── built_ins.c
+        ├── shell.c
+        └── shell.h
 
-4 directories, 6 files
+3 directories, 8 files
 
 **codecrafters**: [codecrafters.io](https://codecrafters.io) to try the challenge.

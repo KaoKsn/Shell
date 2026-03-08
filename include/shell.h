@@ -7,8 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/command_list.h"
-#include "./built_ins.c"
+#include "./command_list.h"
 
 #define INVALID_INPUT 1
 #define MAX_ARGLEN 128

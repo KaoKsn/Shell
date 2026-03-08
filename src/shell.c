@@ -1,4 +1,5 @@
-#include "shell.h"
+#include "../include/shell.h"
+#include "./built_ins.c"
 
 static void sigint_handler(int s) 
 {
