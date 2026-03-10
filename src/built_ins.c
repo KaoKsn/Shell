@@ -27,7 +27,8 @@ int cat (char **files, int tfiles)
     for (int i = 0; i < tfiles; i++) {
         FILE *fptr = fopen(files[i], "r");
         if (fptr == NULL) {
-            perror("");
+            fprintf(stderr, "cat: %s", files[i]);
+            perror(" ");
             continue;
         }
         int c;
