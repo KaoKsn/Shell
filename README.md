@@ -9,15 +9,17 @@ REPLs, builtin commands, and more.
     .
     ├── include
     │   ├── built_ins.h
-    │   └── command_list.h
+    │   ├── command_list.h
+    │   └── shell.h
     ├── LICENSE
     ├── makefile
     ├── README.md
-    └── src
-        ├── built_ins.c
-        ├── shell.c
-        └── shell.h
+    ├── src
+    │   ├── built_ins.c
+    │   └── shell.c
+    ├── test
+        └── main.c
 
-3 directories, 8 files
+    5 directories, 11 files
 
 **codecrafters**: [codecrafters.io](https://codecrafters.io) to try the challenge.
