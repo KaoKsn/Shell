@@ -1,5 +1,22 @@
 #include "../include/shell.h"
-#include "./built_ins.c"
+#include "../include/built_ins.h"
+
+char *PATH = "/usr/local/sbin:"
+             "/usr/local/bin:"
+             "/usr/bin:"
+             "/usr/lib/jvm/default/bin:"
+             "/usr/bin/site_perl:"
+             "/usr/bin/vendor_perl:"
+             "/usr/bin/core_perl";
+
+char *ARGS_LIST[] = {
+        "cat",
+        "date",
+        "echo",
+        "exit",
+        "pwd",
+        "type",
+};
 
 static void sigint_handler(int s) 
 {

@@ -1,6 +1,3 @@
-#ifndef BUILT_INS_C
-#define BUILT_INS_C
-
 #include "../include/built_ins.h"
 
 // Check if cmd is a shell built-in.
@@ -117,4 +114,3 @@ int pwd()
     free(path);
     return ERANGE;
 }
-#endif /* ifndef BUILT_INS_C */

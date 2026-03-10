@@ -1,14 +1,12 @@
 #ifndef COMMAND_LIST_H
 #define COMMAND_LIST_H
 
-char *PATH =    "/usr/bin:"
-                "/usr/local/bin:"
-                "/usr/local/sbin:"
-                "/usr/lib/jvm/default/bin:"
-                "/usr/bin/site_perl:"
-                "/usr/bin/vendor_perl:/usr/bin/core_perl";
+extern char *PATH;
+extern char *ARGS_LIST[];
 
+#ifndef SUPPORTED_CMDS
 #define SUPPORTED_CMDS 6
+#endif
 
 enum COMMAND_IDS {
     CAT,
@@ -18,12 +16,4 @@ enum COMMAND_IDS {
     PWD,
     TYPE,
 };
-char *ARGS_LIST[] = {
-    "cat",
-    "date",
-    "echo",
-    "exit",
-    "pwd",
-    "type",
-};
-#endif
+#endif // COMMAND_LIST_H
