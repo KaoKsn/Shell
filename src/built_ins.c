@@ -143,3 +143,11 @@ int hostname()
     }
     return 0;
 }
+
+int help()
+{
+    printf("You have the following shell built-ins at your disposal:\n");
+    for (int i = 0; i < SUPPORTED_CMDS; i++)
+        printf("\t%s\n", ARGS_LIST[i]);
+    return 0;
+}

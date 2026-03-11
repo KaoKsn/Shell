@@ -14,6 +14,7 @@ char *ARGS_LIST[] = {
         "date",
         "echo",
         "exit",
+        "help",
         "hostname",
         "pwd",
         "type",
@@ -155,6 +156,8 @@ int execute(int cmd_id, char **cmdargs, int targs)
                     printf("Bye...\n");
                     freecmdargs(cmdargs);
                     exit(0);
+            case HELP:
+                    return help();
             case HOSTNAME:
                     return hostname();
             case PWD:
