@@ -115,3 +115,31 @@ int pwd()
     free(path);
     return ERANGE;
 }
+
+int hostname()
+{
+    char *buffer = calloc(HOST_BUFF_MAX, sizeof(char));
+    if (buffer == NULL) {
+        char buff[HOST_BUFF_MAX] = {'\0'};
+        if (gethostname(buff, sizeof(char) * HOST_BUFF_MAX) == 0) {
+            printf("%s\n", buff);
+            return 0;
+        }
+        else {
+            perror("hostname:");
+            return 1;
+        }
+    } else {
+        if (gethostname(buffer, sizeof(char) * HOST_BUFF_MAX) == 0) {
+            printf("%s\n", buffer);
+            free(buffer);
+            return 0;
+        }
+        else {
+            perror("hostname:");
+            free(buffer);
+            return 1;
+        }
+    }
+    return 0;
+}

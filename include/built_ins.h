@@ -14,6 +14,7 @@
 #include "./command_list.h"
 
 #define OPEN_ERR 2
+#define HOST_BUFF_MAX 256
 
 bool isexecutable(char *cmd);
 int search_in(char *dir, char *file);
