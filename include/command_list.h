@@ -5,7 +5,7 @@ extern char *PATH;
 extern char *ARGS_LIST[];
 
 #ifndef SUPPORTED_CMDS
-#define SUPPORTED_CMDS 8
+#define SUPPORTED_CMDS 9
 #endif
 
 enum COMMAND_IDS {
@@ -15,6 +15,7 @@ enum COMMAND_IDS {
     EXIT,
     HELP,
     HOSTNAME,
+    NSLOOKUP,
     PWD,
     TYPE,
 };

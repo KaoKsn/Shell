@@ -151,3 +151,57 @@ int help()
         printf("\t%s\n", ARGS_LIST[i]);
     return 0;
 }
+
+int nslookup(char *domain)
+{
+    if (domain == NULL) {
+        fprintf(stderr, "domain is NULL\n");
+        return 1;
+    }
+    struct addrinfo hints, *res;
+    int status;
+    char *ip;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    status = getaddrinfo(domain, NULL, &hints, &res);
+    if (status != 0) {
+        fprintf(stderr, "nslookup: %s\n", gai_strerror(status));
+        return 1;
+    }
+    printf("%s:\n", domain);
+
+    ip = calloc(INET6_ADDRSTRLEN, sizeof(char));
+    if (ip == NULL) {
+        // Use stack allocation.
+        char ipstr[INET6_ADDRSTRLEN] = {'\0'};
+        return get_ips(res, ipstr);
+    }
+    status = get_ips(res, ip);
+    free(ip);
+    return status;
+}
+
+int get_ips(struct addrinfo *res, char *ipstr)
+{
+    if (res == NULL || ipstr == NULL) {
+        fprintf(stderr, "address list empty | ipstr empty!\n");
+        if (res)
+            freeaddrinfo(res);
+        return 1;
+    }
+    for (struct addrinfo *p = res; p != NULL; p = p->ai_next) {
+        memset(ipstr, 0, INET6_ADDRSTRLEN);
+        if (p->ai_family == AF_INET) {  // ipv4
+            struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
+            inet_ntop(p->ai_family, &(ipv4->sin_addr), ipstr, INET6_ADDRSTRLEN);
+        } else {
+            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
+            inet_ntop(p->ai_family, &(ipv6->sin6_addr), ipstr, INET6_ADDRSTRLEN);
+        }
+        printf("\t%s\n", ipstr);
+    }
+    freeaddrinfo(res);
+    return 0;
+}

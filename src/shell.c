@@ -16,6 +16,7 @@ char *ARGS_LIST[] = {
         "exit",
         "help",
         "hostname",
+        "nslookup",
         "pwd",
         "type",
 };
@@ -48,8 +49,6 @@ int main(void) {
         exit_status = execute(cmd_id, cmdargs, targs);
         if (exit_status == -1)
             fprintf(stderr, "%s: command not found\n", bin);
-        else if (exit_status > 0)
-            fprintf(stderr, "%s: Failed (exec status: %d).\n", bin, exit_status);
         freecmdargs(cmdargs);
     }
     return 0;
@@ -140,7 +139,6 @@ void printargs(char **args, int targs)
     printf("\n");
 }
 
-
 int execute(int cmd_id, char **cmdargs, int targs)
 {
     if (cmdargs) {
@@ -160,13 +158,19 @@ int execute(int cmd_id, char **cmdargs, int targs)
                     return help();
             case HOSTNAME:
                     return hostname();
+            case NSLOOKUP:
+                    if (targs == 2)
+                        return nslookup(cmdargs[1]);
+                    fprintf(stderr, "Usage: nslookup domain\n");
+                    return 1;
             case PWD:
                     return pwd();
             case TYPE:
-                if (targs < 2)
-                    return 1;
-                char *cmd = cmdargs[1];
-                return type(cmd);
+                if (targs > 1) {
+                    return type(cmdargs[1]);
+                }
+                fprintf(stderr, "Usage: type file\n");
+                return 1;
             default:
                 return -1;
         }
