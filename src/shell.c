@@ -12,6 +12,7 @@ char *PATH = "/usr/local/sbin:"
 char *ARGS_LIST[] = {
         "cat",
         "date",
+        "dd",
         "echo",
         "exit",
         "help",
@@ -147,6 +148,11 @@ int execute(int cmd_id, char **cmdargs, int targs)
                     return cat(cmdargs + 1, targs - 1);
             case DATE:
                     return date();
+            case DD:
+                    if (targs == 3)
+                        return dd(cmdargs[1], cmdargs[2]);
+                    fprintf(stderr, "Usage: dd source target\n");
+                    return 1;
             case ECHO:
                     printargs(cmdargs + 1, targs - 1);
                     return 0;

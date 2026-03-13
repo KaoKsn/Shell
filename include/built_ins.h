@@ -26,6 +26,7 @@ int search_in(char *dir, char *file);
 
 int cat(char **files, int tfiles);
 int date();
+int dd(char *src, char *dest);
 int help();
 int hostname();
 int nslookup(char *domain);

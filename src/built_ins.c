@@ -40,6 +40,38 @@ int cat (char **files, int tfiles)
     return 0;
 }
 
+// Copy raw bytes from src to dest.
+int dd(char *src, char *dest)
+{
+    FILE *fsrc = fopen(src, "rb");
+    if (fsrc == NULL) {
+        fprintf(stderr, "dd: %s: ", src);
+        perror(NULL);
+        return 1;
+    }
+    FILE *fdest = fopen(dest, "wb");
+    if (fdest == NULL) {
+        perror("dd: fopen");
+        return 2;
+    }
+    uint8_t buffer;
+    while (fread(&buffer, sizeof(char), 1, fsrc) == 1) {
+        if (fwrite(&buffer, sizeof(char), 1, fdest) != 1) {
+            perror("fwrite");
+            break;
+        }
+    }
+    fclose(fdest);
+    // Check if read was successful.
+    if (feof(fsrc) == 0) {
+        fprintf(stderr, "Write unsuccessful!\n");
+        fclose(fsrc);
+        return 3;
+    }
+    fclose(fsrc);
+    return 0;
+}
+
 // Print the current date set by locale.
 int date()
 {
