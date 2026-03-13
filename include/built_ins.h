@@ -31,6 +31,7 @@ int help();
 int hostname();
 int nslookup(char *domain);
 int pwd();
+int _rmdir(char **dirs, int tdirs);
 int type(char *cmd);
 
 #endif // !BUILT_INS_H

@@ -72,6 +72,19 @@ int dd(char *src, char *dest)
     return 0;
 }
 
+// Remove empty directories.
+int _rmdir(char **dirs, int tdirs)
+{
+    int rval = 1;
+    for (int i = 0; i < tdirs; i++) {
+        if (rmdir(dirs[i]) != 0) {
+            fprintf(stderr, "%s: ", dirs[i]);
+            perror("");
+            rval = 1;
+        }
+    }
+    return rval;
+}
 // Print the current date set by locale.
 int date()
 {

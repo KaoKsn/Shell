@@ -19,6 +19,7 @@ char *ARGS_LIST[] = {
         "hostname",
         "nslookup",
         "pwd",
+        "rmdir",
         "type",
 };
 
@@ -171,6 +172,11 @@ int execute(int cmd_id, char **cmdargs, int targs)
                     return 1;
             case PWD:
                     return pwd();
+            case RMDIR:
+                    if (targs > 1)
+                        return _rmdir(cmdargs + 1, targs - 1);
+                    fprintf(stderr, "Usage: rmdir dirlist\n");
+                    return 1;
             case TYPE:
                 if (targs > 1) {
                     return type(cmdargs[1]);
