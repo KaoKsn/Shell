@@ -15,14 +15,13 @@
 #include <unistd.h>
 
 #include "./command_list.h"
+#include "./path.h"
 
 #define OPEN_ERR 2
 #define HOST_BUFF_MAX 256
 
-bool isexecutable(char *cmd);
 int builtin(char *cmd);
 int get_ips(struct addrinfo *res, char *ipstr);
-int search_in(char *dir, char *file);
 
 int cat(char **files, int tfiles);
 int date();
@@ -32,6 +31,6 @@ int hostname();
 int nslookup(char *domain);
 int pwd();
 int _rmdir(char **dirs, int tdirs);
-int type(char *cmd);
+int type(PATH *path, char *cmd);
 
 #endif // !BUILT_INS_H

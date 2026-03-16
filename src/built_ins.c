@@ -1,4 +1,5 @@
 #include "../include/built_ins.h"
+#include "../include/path.h"
 
 // Check if cmd is a shell built-in.
 int builtin(char *cmd)
@@ -94,51 +95,18 @@ int date()
 }
 
 // Check if cmd is a built-in/executable in PATH.
-int type(char *cmd)
+int type(PATH *path, char *cmd)
 {
-    if (builtin(cmd) != -1)
-        printf("%s: is a shell built-in\n", cmd);
-    else if (isexecutable(cmd) == false)
+    char *loc;
+    if (builtin(cmd) != -1) {
+        printf("%s: is a shell builtin\n", cmd);
+    } else if ((loc = find_in_path(path, cmd)) != NULL) {
+        printf("%s is %s\n", cmd, loc);
+        free(loc);
+    } else {
         printf("%s: not found\n", cmd);
-    return 0;
-}
-
-// Look dir for file.
-int search_in(char *dir, char *file) {
-    if (dir) {
-        strcat(dir, file);
-        struct stat sb;
-        if (stat(dir, &sb) == 0 && (sb.st_mode & S_IEXEC))
-            return 1;
-        else
-            // File found with no execute perm(0).
-            return 0;
     }
     return 0;
-}
-
-// Check if a given binary is present in PATH.
-bool isexecutable(char *cmd) {
-    char delimiter = strstr(PATH, ":") ? ':' : ';';
-    char dir[PATH_MAX] = {'\0'};
-    for (size_t i = 0, k = 0; PATH[i] != '\0'; i++) {
-        if (PATH[i] == delimiter || i == strlen(PATH) - 1) {
-            if (i == strlen(PATH) - 1)
-                dir[k++] = PATH[i];
-            if (dir[strlen(dir)-1] != '/')
-                strcat(dir, "/");
-            if (search_in(dir, cmd) == 1) {
-                printf("%s is %s\n", cmd, dir);
-                return true;
-            }
-            // Check in the next path.
-            memset(dir, 0, PATH_MAX * sizeof(char));
-            k = 0;
-        } else {
-            dir[k++] = PATH[i];
-        }
-    }
-    return false;
 }
 
 int pwd()

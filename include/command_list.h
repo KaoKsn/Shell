@@ -1,7 +1,6 @@
 #ifndef COMMAND_LIST_H
 #define COMMAND_LIST_H
 
-extern char *PATH;
 extern char *ARGS_LIST[];
 
 #ifndef SUPPORTED_CMDS

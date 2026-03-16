@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "./command_list.h"
+#include "./path.h"
 
 #define INVALID_INPUT 1
 #define MAX_ARGLEN 128
@@ -17,7 +18,7 @@
 int read_input(char *cmd);
 char **breakdown(char *cmd, int len, int *targs);
 void printargs(char **args, int targs);
-int execute(int cmd_id, char **cmdargs, int targs);
+int execute(int cmd_id, char **cmdargs, int targs, PATH *path);
 void freecmdargs(char **args);
 
 #endif // !SHELL_H

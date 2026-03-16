@@ -1,13 +1,6 @@
 #include "../include/shell.h"
 #include "../include/built_ins.h"
-
-char *PATH = "/usr/local/sbin:"
-             "/usr/local/bin:"
-             "/usr/bin:"
-             "/usr/lib/jvm/default/bin:"
-             "/usr/bin/site_perl:"
-             "/usr/bin/vendor_perl:"
-             "/usr/bin/core_perl";
+#include "../include/path.h"
 
 char *ARGS_LIST[] = {
         "cat",
@@ -30,6 +23,8 @@ static void sigint_handler(int s)
 }
 int main(void) {
     signal(SIGINT, sigint_handler);
+    path = load_path();
+
     int targs = 0, exit_status, input_status, cmd_id;
     char cmd[INPUT_BUFFER_SIZE];
     while (true) {
@@ -48,11 +43,12 @@ int main(void) {
         }
         char *bin = cmdargs[0];
         cmd_id = builtin(bin);
-        exit_status = execute(cmd_id, cmdargs, targs);
+        exit_status = execute(cmd_id, cmdargs, targs, path);
         if (exit_status == -1)
             fprintf(stderr, "%s: command not found\n", bin);
         freecmdargs(cmdargs);
     }
+    freepath(path);
     return 0;
 }
 
@@ -141,7 +137,7 @@ void printargs(char **args, int targs)
     printf("\n");
 }
 
-int execute(int cmd_id, char **cmdargs, int targs)
+int execute(int cmd_id, char **cmdargs, int targs, PATH *path)
 {
     if (cmdargs) {
         switch (cmd_id) {
@@ -160,6 +156,7 @@ int execute(int cmd_id, char **cmdargs, int targs)
             case EXIT:
                     printf("Bye...\n");
                     freecmdargs(cmdargs);
+                    freepath(path);
                     exit(0);
             case HELP:
                     return help();
@@ -178,11 +175,15 @@ int execute(int cmd_id, char **cmdargs, int targs)
                     fprintf(stderr, "Usage: rmdir dirlist\n");
                     return 1;
             case TYPE:
-                if (targs > 1) {
-                    return type(cmdargs[1]);
+                int rval = 1;
+                if (targs < 2) {
+                    fprintf(stderr, "Usage: type cmds\n");
+                    return rval;
                 }
-                fprintf(stderr, "Usage: type file\n");
-                return 1;
+                for (int i = 1; i < targs; i++) {
+                    rval = type(path, cmdargs[i]);
+                }
+                return rval;
             default:
                 return -1;
         }
