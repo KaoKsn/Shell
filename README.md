@@ -10,16 +10,25 @@ REPLs, builtin commands, and more.
     ├── include
     │   ├── built_ins.h
     │   ├── command_list.h
-    │   └── shell.h
+    │   ├── path.h
+    │   ├── shell.h
+    │   └── util.h
     ├── LICENSE
     ├── makefile
     ├── README.md
     ├── src
     │   ├── built_ins.c
-    │   └── shell.c
+    │   ├── path.c
+    │   ├── shell.c
+    │   └── util.c
     ├── test
-        └── main.c
+    │   └── main.c
+    └── utils
+        ├── head.c
+        ├── rm.c
+        ├── rmdir.c
+        └── touch.c
 
-    5 directories, 11 files
+    5 directories, 17 files
 
 **codecrafters**: [codecrafters.io](https://codecrafters.io) to try the challenge.
