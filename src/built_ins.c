@@ -227,6 +227,7 @@ int try_exec(char *bin, char **cmdargs, char **envps, int targs)
     pid_t child = fork();
     if (child < 0) {
         perror("fork");
+        free(bin);
         return 1;
     } else if (child == 0) {
         char **argv = calloc(targs + 1, sizeof(char *));
@@ -247,7 +248,7 @@ int try_exec(char *bin, char **cmdargs, char **envps, int targs)
         freecmdargs(cmdargs);
         free(bin);
         free(argv);
-        exit(0);    // Child exits normally.
+        exit(1);    // Child failed to exec.
     } else {
         int r_wait = wait(NULL);
         free(bin);
