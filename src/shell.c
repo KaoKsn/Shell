@@ -140,6 +140,7 @@ void printargs(char **args, int targs)
 int execute(int cmd_id, char **cmdargs, int targs, PATH *path)
 {
     if (cmdargs) {
+        int rval;
         switch (cmd_id) {
             case CAT:
                     return cat(cmdargs + 1, targs - 1);
@@ -175,17 +176,17 @@ int execute(int cmd_id, char **cmdargs, int targs, PATH *path)
                     fprintf(stderr, "Usage: rmdir dirlist\n");
                     return 1;
             case TYPE:
-                int rval = 1;
                 if (targs < 2) {
                     fprintf(stderr, "Usage: type cmds\n");
-                    return rval;
+                    return 1;
                 }
                 for (int i = 1; i < targs; i++) {
                     rval = type(path, cmdargs[i]);
                 }
                 return rval;
             default:
-                return -1;
+                char *bin = find_in_path(path, cmdargs[0]);
+                return try_exec(bin, cmdargs, targs);
         }
     }
     return -1;

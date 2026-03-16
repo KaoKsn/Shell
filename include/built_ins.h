@@ -11,6 +11,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -22,6 +23,7 @@
 
 int builtin(char *cmd);
 int get_ips(struct addrinfo *res, char *ipstr);
+int try_exec(char *bin, char **cmdargs, int targs);
 
 int cat(char **files, int tfiles);
 int date();

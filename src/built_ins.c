@@ -218,3 +218,40 @@ int get_ips(struct addrinfo *res, char *ipstr)
     freeaddrinfo(res);
     return 0;
 }
+
+// Spawn a child.
+int try_exec(char *bin, char **cmdargs, int targs)
+{
+    if (bin == NULL)
+        return -1;
+    pid_t child = fork();
+    if (child < 0) {
+        perror("fork");
+        return 1;
+    } else if (child == 0) {
+        char **argv = calloc(targs + 1, sizeof(char *));
+        if (argv == NULL) {
+            fprintf(stderr, "Setting argv failed!\n");
+            free(bin);
+            freecmdargs(cmdargs);
+            exit(-1);
+        }
+        for (int i = 0; i < targs; i++)
+            argv[i] = cmdargs[i];
+        argv[targs] = NULL;
+
+        execvp(bin, argv);
+        freecmdargs(cmdargs);
+        free(bin);
+        exit(0);    // Child exits normally.
+    } else {
+        int r_wait = wait(NULL);
+        free(bin);
+        if (r_wait == child) {
+            return 0;
+        } else {
+            perror("wait");
+            return r_wait;
+        }
+    }
+}
