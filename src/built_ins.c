@@ -220,7 +220,7 @@ int get_ips(struct addrinfo *res, char *ipstr)
 }
 
 // Spawn a child.
-int try_exec(char *bin, char **cmdargs, int targs)
+int try_exec(char *bin, char **cmdargs, char **envps, int targs)
 {
     if (bin == NULL)
         return -1;
@@ -240,9 +240,13 @@ int try_exec(char *bin, char **cmdargs, int targs)
             argv[i] = cmdargs[i];
         argv[targs] = NULL;
 
-        execvp(bin, argv);
+        execvpe(bin, argv, envps);
+        if (errno == -1) {
+            perror("execvpe");
+        }
         freecmdargs(cmdargs);
         free(bin);
+        free(argv);
         exit(0);    // Child exits normally.
     } else {
         int r_wait = wait(NULL);

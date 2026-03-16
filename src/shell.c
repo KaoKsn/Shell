@@ -21,7 +21,7 @@ static void sigint_handler(int s)
     printf("\nBye\n");
     exit(0);
 }
-int main(void) {
+int main(int argc, char **argv, char **envs) {
     signal(SIGINT, sigint_handler);
     path = load_path();
 
@@ -43,7 +43,7 @@ int main(void) {
         }
         char *bin = cmdargs[0];
         cmd_id = builtin(bin);
-        exit_status = execute(cmd_id, cmdargs, targs, path);
+        exit_status = execute(cmd_id, cmdargs, targs, path, envs);
         if (exit_status == -1)
             fprintf(stderr, "%s: command not found\n", bin);
         freecmdargs(cmdargs);
@@ -137,7 +137,7 @@ void printargs(char **args, int targs)
     printf("\n");
 }
 
-int execute(int cmd_id, char **cmdargs, int targs, PATH *path)
+int execute(int cmd_id, char **cmdargs, int targs, PATH *path, char **envs)
 {
     if (cmdargs) {
         int rval;
@@ -186,7 +186,7 @@ int execute(int cmd_id, char **cmdargs, int targs, PATH *path)
                 return rval;
             default:
                 char *bin = find_in_path(path, cmdargs[0]);
-                return try_exec(bin, cmdargs, targs);
+                return try_exec(bin, cmdargs, envs, targs);
         }
     }
     return -1;

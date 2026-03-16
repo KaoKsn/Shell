@@ -23,7 +23,7 @@
 
 int builtin(char *cmd);
 int get_ips(struct addrinfo *res, char *ipstr);
-int try_exec(char *bin, char **cmdargs, int targs);
+int try_exec(char *bin, char **cmdargs, char **envs, int targs);
 
 int cat(char **files, int tfiles);
 int date();

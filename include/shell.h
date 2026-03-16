@@ -18,7 +18,7 @@
 int read_input(char *cmd);
 char **breakdown(char *cmd, int len, int *targs);
 void printargs(char **args, int targs);
-int execute(int cmd_id, char **cmdargs, int targs, PATH *path);
+int execute(int cmd_id, char **cmdargs, int targs, PATH *path, char **envs);
 void freecmdargs(char **args);
 
 #endif // !SHELL_H
