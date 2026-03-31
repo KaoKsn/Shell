@@ -5,6 +5,7 @@
 
 char *ARGS_LIST[] = {
         "cat",
+        "cd",
         "date",
         "dd",
         "echo",
@@ -160,6 +161,11 @@ int execute(int cmd_id, char **cmdargs, int targs, PATH_t *path)
         switch (cmd_id) {
             case CAT:
                     return cat(cmdargs + 1, targs - 1);
+            case CD:
+                    if (targs > 1)
+                        return cd(cmdargs[1]);
+                    fprintf(stderr, "Usage: cd path\n");
+                    return 1;
             case DATE:
                     return date();
             case DD:

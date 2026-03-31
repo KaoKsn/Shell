@@ -41,6 +41,18 @@ int cat (char **files, int tfiles)
     return 0;
 }
 
+// Change the current working directory.
+int cd(char *path)
+{
+    if (path) {
+        if (chdir(path) == 0)
+            return 0;
+        else
+            perror("cd");
+    }
+    return 1;
+}
+
 // Copy raw bytes from src to dest.
 int dd(char *src, char *dest)
 {

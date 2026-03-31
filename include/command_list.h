@@ -4,11 +4,12 @@
 extern char *ARGS_LIST[];
 
 #ifndef SUPPORTED_CMDS
-#define SUPPORTED_CMDS 11
+#define SUPPORTED_CMDS 12
 #endif
 
 enum COMMAND_IDS {
     CAT,
+    CD,
     DATE,
     DD,
     ECHO,
