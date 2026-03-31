@@ -1,6 +1,7 @@
 #include "../include/shell.h"
 #include "../include/built_ins.h"
 #include "../include/path.h"
+#include "../include/history.h"
 
 char *ARGS_LIST[] = {
         "cat",
@@ -21,12 +22,23 @@ static void sigint_handler(int s)
     printf("\nBye\n");
     exit(0);
 }
-int main(int argc, char **argv, char **envs) {
+int main(void) {
     signal(SIGINT, sigint_handler);
     path = load_path();
-
     int targs = 0, exit_status, input_status, cmd_id;
     char cmd[INPUT_BUFFER_SIZE];
+
+    int fd = hist_init();
+    if (fd < 1) {
+        fprintf(stderr, "Command history init failed!\n\tContinue? ");
+        char choice;
+        scanf("%c", &choice);
+        setbuf(stdin, NULL);
+        if (choice != 'y' && choice != 'Y') {
+            freepath(path);
+            return HIST_INIT_FAILED;
+        }
+    }
     while (true) {
         setbuf(stdout, NULL);
         printf("$ ");
@@ -36,6 +48,9 @@ int main(int argc, char **argv, char **envs) {
         input_status = read_input(cmd);
         if (input_status != 0)
             continue;
+        // Append to shell history.
+        append(fd, cmd);
+
         char **cmdargs = breakdown(cmd, strlen(cmd), &targs);
         if (cmdargs == NULL) {
             fprintf(stderr, "Allocation Failed!\n");
@@ -43,12 +58,13 @@ int main(int argc, char **argv, char **envs) {
         }
         char *bin = cmdargs[0];
         cmd_id = builtin(bin);
-        exit_status = execute(cmd_id, cmdargs, targs, path, envs);
+        exit_status = execute(cmd_id, cmdargs, targs, path);
         if (exit_status == -1)
             fprintf(stderr, "%s: command not found\n", bin);
         freecmdargs(cmdargs);
     }
     freepath(path);
+    close(fd);
     return 0;
 }
 
@@ -137,7 +153,7 @@ void printargs(char **args, int targs)
     printf("\n");
 }
 
-int execute(int cmd_id, char **cmdargs, int targs, PATH *path, char **envs)
+int execute(int cmd_id, char **cmdargs, int targs, PATH_t *path)
 {
     if (cmdargs) {
         int rval;
@@ -158,6 +174,7 @@ int execute(int cmd_id, char **cmdargs, int targs, PATH *path, char **envs)
                     printf("Bye...\n");
                     freecmdargs(cmdargs);
                     freepath(path);
+                    // Remember to free histfile.
                     exit(0);
             case HELP:
                     return help();
@@ -186,7 +203,7 @@ int execute(int cmd_id, char **cmdargs, int targs, PATH *path, char **envs)
                 return rval;
             default:
                 char *bin = find_in_path(path, cmdargs[0]);
-                return try_exec(bin, cmdargs, envs, targs);
+                return try_exec(bin, cmdargs, targs);
         }
     }
     return -1;

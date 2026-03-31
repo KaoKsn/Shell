@@ -1,12 +1,12 @@
 #include "../include/path.h"
 #include "../include/util.h"
 
-PATH *path = NULL;
+PATH_t *path = NULL;
 
 // Load the users PATH on shell init.
-PATH *load_path()
+PATH_t *load_path()
 {
-    PATH *path = malloc(sizeof(PATH));
+    PATH_t *path = malloc(sizeof(PATH_t));
     if (path == NULL) {
         fprintf(stderr, "*** Malloc for env PATH failed!\n");
         fprintf(stderr, "\t*** Binaries requiring it might not work as expected!\n");
@@ -30,7 +30,7 @@ PATH *load_path()
 }
 
 // Return the absolute path to a binary if it exists in the PATH.
-char *find_in_path(PATH *path, char *target)
+char *find_in_path(PATH_t *path, char *target)
 {
     if (path && target) {
         struct stat sb;
@@ -57,7 +57,7 @@ char *find_in_path(PATH *path, char *target)
     return NULL;
 }
 
-void freepath(PATH *path)
+void freepath(PATH_t *path)
 {
     if (path) {
         free(path->dirs);

@@ -14,12 +14,12 @@
 typedef struct {
     char **dirs;
     int tdirs;
-} PATH;
+} PATH_t;
 
-extern PATH *path;
+extern PATH_t *path;
 
-PATH *load_path();
-char *find_in_path(PATH *path, char *bin);
-void freepath(PATH *path);
+PATH_t *load_path();
+char *find_in_path(PATH_t *path, char *bin);
+void freepath(PATH_t *path);
 
 #endif // PATH_H

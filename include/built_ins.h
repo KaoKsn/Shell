@@ -23,7 +23,7 @@
 
 int builtin(char *cmd);
 int get_ips(struct addrinfo *res, char *ipstr);
-int try_exec(char *bin, char **cmdargs, char **envs, int targs);
+int try_exec(char *bin, char **cmdargs, int targs);
 
 int cat(char **files, int tfiles);
 int date();
@@ -33,6 +33,6 @@ int hostname();
 int nslookup(char *domain);
 int pwd();
 int _rmdir(char **dirs, int tdirs);
-int type(PATH *path, char *cmd);
+int type(PATH_t *path, char *cmd);
 
 #endif // !BUILT_INS_H

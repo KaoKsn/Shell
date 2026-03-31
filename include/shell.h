@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "./command_list.h"
 #include "./path.h"
@@ -18,7 +20,7 @@
 int read_input(char *cmd);
 char **breakdown(char *cmd, int len, int *targs);
 void printargs(char **args, int targs);
-int execute(int cmd_id, char **cmdargs, int targs, PATH *path, char **envs);
+int execute(int cmd_id, char **cmdargs, int targs, PATH_t *path);
 void freecmdargs(char **args);
 
 #endif // !SHELL_H

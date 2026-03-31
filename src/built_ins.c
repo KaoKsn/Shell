@@ -95,7 +95,7 @@ int date()
 }
 
 // Check if cmd is a built-in/executable in PATH.
-int type(PATH *path, char *cmd)
+int type(PATH_t *path, char *cmd)
 {
     char *loc;
     if (builtin(cmd) != -1) {
@@ -220,7 +220,7 @@ int get_ips(struct addrinfo *res, char *ipstr)
 }
 
 // Spawn a child.
-int try_exec(char *bin, char **cmdargs, char **envps, int targs)
+int try_exec(char *bin, char **cmdargs, int targs)
 {
     if (bin == NULL)
         return -1;
@@ -241,7 +241,7 @@ int try_exec(char *bin, char **cmdargs, char **envps, int targs)
             argv[i] = cmdargs[i];
         argv[targs] = NULL;
 
-        execvpe(bin, argv, envps);
+        execvp(bin, argv);
         if (errno == -1) {
             perror("execvpe");
         }
