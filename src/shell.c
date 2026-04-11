@@ -20,6 +20,7 @@ char *ARGS_LIST[] = {
 
 static void sigint_handler(int s) 
 {
+    (void)s;
     printf("\nBye\n");
     exit(0);
 }
@@ -42,7 +43,11 @@ int main(void) {
     }
     while (true) {
         setbuf(stdout, NULL);
-        printf("$ ");
+        char *user = getenv("USER");
+        if (user == NULL)
+            printf("$ ");
+        else
+            printf("(%s) $ ", user);
 
         memset(cmd, 0, sizeof(cmd));
 
