@@ -36,9 +36,11 @@ bool append(int fd, char *cmd)
     if (cmd) {
         time_t tm = time(NULL);
         char *curtime = ctime(&tm);
+        // Remove the trailing newline.
+        strtok(curtime, "\n");
 
         char buffer[HIST_BUFF_SIZE] = {'\0'};
-        strncat(buffer, curtime, strlen(curtime) - 1);
+        strncat(buffer, curtime, 32);
         strncat(buffer, " ", HIST_BUFF_SIZE - strlen(buffer));
         strncat(buffer, cmd, HIST_BUFF_SIZE - strlen(buffer));
         strncat(buffer, "\n", HIST_BUFF_SIZE - strlen(buffer));
