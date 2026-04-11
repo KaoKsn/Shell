@@ -45,12 +45,43 @@ int cat (char **files, int tfiles)
 int cd(char *path)
 {
     if (path) {
-        if (chdir(path) == 0)
-            return 0;
-        else
-            perror("cd");
+        char *fpath = path, *abspath = NULL;
+        // Only substitue the first ~, if it exists.
+        if (path[0] == '~') {
+            char *homedir = getenv("HOME");
+            if (homedir == NULL) {
+                fprintf(stderr, "Variable HOME not set!\n");
+                return EXIT_FAILURE;
+            }
+            abspath = calloc(PATH_MAX + 1, sizeof(char));
+            if (abspath == NULL) {
+                // If calloc fails, use the stack.
+                char sabspath[PATH_MAX + 1] = {'\0'};
+                fpath = sabspath;
+                strncat(sabspath, homedir, PATH_MAX - 1);
+                if (strlen(path) > 1)
+                    strncat(sabspath, path + 1, PATH_MAX - 1 - strlen(sabspath));
+            } else {
+                fpath = abspath;
+                strncat(abspath, homedir, PATH_MAX - 1);
+                // Copy anything after the beginning ~ as is.
+                if (strlen(path) > 1)
+                    strncat(abspath, path + 1, PATH_MAX - 1 - strlen(abspath));
+            }
+        }
+        // Perform chdir on the abspath obtained.
+        if (chdir(fpath) != 0) {
+            fprintf(stderr, "cd: %s", fpath);
+            perror(" ");
+            if (fpath == abspath)
+                free(abspath);
+            return EXIT_FAILURE;
+        }
+        if (fpath == abspath)
+            free(abspath);
+        return EXIT_SUCCESS;
     }
-    return 1;
+    return EXIT_FAILURE;
 }
 
 // Copy raw bytes from src to dest.
