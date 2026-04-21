@@ -12,6 +12,7 @@ char *ARGS_LIST[] = {
         "exit",
         "help",
         "hostname",
+        "mkdir",
         "nslookup",
         "pwd",
         "rmdir",
@@ -35,14 +36,14 @@ int main(void) {
         fprintf(stderr, "Command history init failed!\n\tContinue? ");
         char choice;
         scanf("%c", &choice);
-        setbuf(stdin, NULL);
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
         if (choice != 'y' && choice != 'Y') {
             freepath(path);
             return HIST_INIT_FAILED;
         }
     }
     while (true) {
-        setbuf(stdout, NULL);
         char *user = getenv("USER");
         if (user == NULL)
             printf("$ ");
@@ -191,6 +192,11 @@ int execute(int cmd_id, char **cmdargs, int targs, PATH_t *path)
                     return help();
             case HOSTNAME:
                     return hostname();
+            case MKDIR:
+                    if (targs > 1)
+                        return _mkdir(cmdargs[1]);
+                    fprintf(stderr, "Usage: mkdir path1 [path2 ..]\n");
+                    break;
             case NSLOOKUP:
                     if (targs == 2)
                         return nslookup(cmdargs[1]);
