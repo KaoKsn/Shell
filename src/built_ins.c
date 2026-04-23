@@ -116,6 +116,54 @@ int dd(char *src, char *dest)
     return 0;
 }
 
+int _mkdir(int argc, char **argv)
+{
+    if (argv) {
+        char *flags = "hs";
+        int s = 0;
+        opterr = 0; // Supress inbuilt errors.
+        int opt;
+        optind = 1;
+        while ((opt = getopt(argc, argv, flags)) != -1) {
+            switch (opt) {
+                case 'h':
+                    printf("Usage: mkdir -[hs] path1 [path2...]\n");
+                    return 0;
+                case 's':
+                    s = 1;
+                    break;
+                case '?':
+                    fprintf(stderr, "Invalid switch %c. Use -h for help\n", optopt);
+                    return 1;
+            }
+        }
+        // No operands
+        if (optind == argc) {
+            fprintf(stderr, "No paths specified!\n");
+            return 1;
+        }
+        while (optind < argc) {
+            char *path = argv[optind++];
+            if (mkdir(path, 0755) == 0) {
+                // If switch is enabled, switch to the last specified path before returning.
+                if (s && (optind == argc)) {
+                    if (chdir(path) != 0) {
+                        fprintf(stderr, "mkdir: failed to switch to %s: ", path);
+                        perror("");
+                    }
+                    return 0;
+                }
+            } else {
+                fprintf(stderr, "mkdir: failed creating %s", path);
+                perror(" ");
+                if (optind == argc)
+                    return 1;
+            }
+        }
+    }
+    return 1;
+}
+
 // Remove empty directories.
 int _rmdir(char **dirs, int tdirs)
 {

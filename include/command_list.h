@@ -4,7 +4,7 @@
 extern char *ARGS_LIST[];
 
 #ifndef SUPPORTED_CMDS
-#define SUPPORTED_CMDS 12
+#define SUPPORTED_CMDS 13
 #endif
 
 enum COMMAND_IDS {
@@ -16,6 +16,7 @@ enum COMMAND_IDS {
     EXIT,
     HELP,
     HOSTNAME,
+    MKDIR,
     NSLOOKUP,
     PWD,
     RMDIR,

@@ -30,6 +30,7 @@ int date();
 int dd(char *src, char *dest);
 int help();
 int hostname();
+int _mkdir(int targs, char **cmdargs);
 int nslookup(char *domain);
 int pwd();
 int _rmdir(char **dirs, int tdirs);
