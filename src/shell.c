@@ -105,7 +105,7 @@ char **breakdown(char *cmd, int len, int *targs)
         cmd_args[i] = calloc(MAX_ARGLEN + 1, sizeof(char));
         if (cmd_args[i] == NULL) {
             for (int j = 0; j < i; j++) {
-                free(cmd_args[i]);
+                free(cmd_args[j]);
             }
             free(cmd_args);
             return NULL;
@@ -193,10 +193,7 @@ int execute(int cmd_id, char **cmdargs, int targs, PATH_t *path)
             case HOSTNAME:
                     return hostname();
             case MKDIR:
-                    if (targs > 1)
-                        return _mkdir(cmdargs[1]);
-                    fprintf(stderr, "Usage: mkdir path1 [path2 ..]\n");
-                    break;
+                    return _mkdir(targs, cmdargs);
             case NSLOOKUP:
                     if (targs == 2)
                         return nslookup(cmdargs[1]);
