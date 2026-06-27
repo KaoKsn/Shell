@@ -1,12 +1,33 @@
 # Thanks to Job Vranish (https://spin.atomicobject.com/2016/08/26/makefile-c-projects/)
 CC := gcc
 OPT := -O2
-CFLAGS := -pedantic -Wall -Wextra -g -Wno-implicit-function-declaration $(OPT)
-TARGET_EXEC := main
+TARGET_EXEC := sh
 
-BUILD_DIR := ./build
+BUILD_DIR_DEBUG := ./build/debug
+BUILD_DIR_RELEASE := ./build/release
 SRC_DIRS := ./src
 INC_DIRS := ./include
+
+# Default release build flags.
+CFLAGS_RELEASE := -Wall -Wextra -pedantic -Wstrict-aliasing $(OPT)
+LDFLAGS_RELEASE :=
+
+# Debug build.
+CFLAGS_DEBUG := -Wall -Wextra -pedantic -g -fsanitize=address,undefined -fno-omit-frame-pointer
+LDFLAGS_DEBUG := -fsanitize=address,undefined
+
+# Default to release build.
+MODE ?= release
+
+ifeq ($(MODE),debug)
+    CFLAGS := $(CFLAGS_DEBUG)
+    LDFLAGS := $(LDFLAGS_DEBUG)
+	BUILD_DIR := $(BUILD_DIR_DEBUG)
+else
+    CFLAGS := $(CFLAGS_RELEASE)
+    LDFLAGS := $(LDFLAGS_RELEASE)
+	BUILD_DIR := $(BUILD_DIR_RELEASE)
+endif
 
 # Find all the C and C++ files we want to compile
 # Note the single quotes around the * expressions. The shell will incorrectly expand these otherwise, but we want to send the * directly to the find command.
@@ -36,9 +57,14 @@ $(BUILD_DIR)/%.c.o: %.c
 	mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-.PHONY: clean
+.PHONY: clean debug release
+
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR_DEBUG) $(BUILD_DIR_RELEASE)
+debug:
+	$(MAKE) MODE=debug
+release:
+	$(MAKE) MODE=release
 
 # Include the .d makefiles. The - at the front suppresses the errors of missing
 # Makefiles. Initially, all the .d files will be missing, and we don't want those

@@ -1,4 +1,5 @@
 #include "../include/built_ins.h"
+#include "../include/shell.h"
 #include "../include/path.h"
 
 // Check if cmd is a shell built-in.

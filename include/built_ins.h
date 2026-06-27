@@ -27,6 +27,7 @@ int try_exec(char *bin, char **cmdargs, int targs);
 
 int cat(char **files, int tfiles);
 int date();
+int cd(char *path);
 int dd(char *src, char *dest);
 int help();
 int hostname();
